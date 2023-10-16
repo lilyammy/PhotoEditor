@@ -1,0 +1,30 @@
+Display
+
+<Display>:
+    BoxLayout
+        spacing:"10dp"
+        orientation: "vertical"
+        Image:
+            id: image
+            source: root.display_image()
+        GridLayout:
+            orientation: "lr-tb"
+            cols: 2
+            rows: 4
+            TextInput:
+                id: user_input
+            Button:
+                text: "load image"
+                on_press: root.user_image(user_input)
+            Button:
+                text: "Line drawing"
+            Button:
+                text: "Sepia"
+            Button:
+                text: "Black and White"
+            Button:
+                text: "Inverse"
+            Button:
+                text: "Pointilism"
+            Button:
+                text: "Pixelate "
