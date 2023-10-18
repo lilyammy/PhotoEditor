@@ -6,7 +6,7 @@ Display
         orientation: "vertical"
         Image:
             id: image
-            source: root.display_image()
+            source: ""
         GridLayout:
             orientation: "lr-tb"
             cols: 2
@@ -15,15 +15,17 @@ Display
                 id: user_input
             Button:
                 text: "load image"
-                on_press: root.user_image(user_input)
+                on_press: root.load_image()
             Button:
                 text: "Line drawing"
             Button:
                 text: "Sepia"
+                on_press: root.sepia("test")
             Button:
                 text: "Black and White"
             Button:
                 text: "Inverse"
+                on_press: root.inverse("test")
             Button:
                 text: "Pointilism"
             Button:
