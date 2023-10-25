@@ -21,7 +21,7 @@ class Display(Screen, Widget):
 
 
 
-    def sepia( self, name):
+    def sepia( self):
         image = self.ids.image.source
         img = Image.open(image)
         pixels = img.load()
@@ -34,11 +34,10 @@ class Display(Screen, Widget):
                 green1 = int(red * .349 + green * 0.686 + blue * 0.168)
                 blue1 = int(red * .272 + green * 0.534 + blue * 0.131)
                 pixels[x, y] = (red1, green1, blue1)
-        img.save(name + "sepia.jpg")
-        self.ids.image.source = name+ "sepia.jpg"
+        img.save(image + "sepia.jpg")
+        self.ids.image.source = image+ "sepia.jpg"
 
-
-    def inverse(self,name):
+    def inverse(self):
         image =self.ids.image.source
         img = Image.open(image)
         pixels = img.load()
@@ -48,10 +47,10 @@ class Display(Screen, Widget):
                 green = 255 - pixels[x, y][1]
                 blue = 255 - pixels[x, y][2]
                 pixels[x, y] = (red, green, blue)
-        img.save(name+ "invert.jpg")
-        self.ids.image.source = name +"invert.jpg"
+        img.save(image+ "invert.jpg")
+        self.ids.image.source = image +"invert.jpg"
 
-    def pointillism(self, name):
+    def pointillism(self):
         image = self.ids.image.source
         img = Image.open(image)
         pixels = img.load()
@@ -68,8 +67,8 @@ class Display(Screen, Widget):
             ellipsebox = [(x, y), (x + size, y + size)]
             draw.ellipse(ellipsebox, fill=(red, green, blue))
             del draw
-        canvas.save(name + "pointillism.jpg")
-        self.ids.image.source = name + "pointillism.jpg"
+        canvas.save(image + "pointillism.jpg")
+        self.ids.image.source = image + "pointillism.jpg"
 
 
     def distance_halo(self):
