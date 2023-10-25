@@ -5,6 +5,8 @@ from kivy.app import App
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
+from PIL import Image, ImageChops
+import math
 
 
 class PhotoEditorApp(App):
@@ -12,90 +14,11 @@ class PhotoEditorApp(App):
 
 class Display(Screen, Widget):
     coordinates = []
-    # def on_touch_down(self,touch):
-    #     x, y = touch.x, touch.y
-    #     self.coordinates.append(int(x))
-    #     self.coordinates.append(int(y))
-    #     if len(self.coordinates)>6:
-    #         self.coordinates= self.coodrinates[2:]
-    #     print("Mouse pressed X:"+str(int(x)) + "y" + str(int(y)))
-    #     touch.push()
-    #     touch.apply_transform_2d(self.to_local)
-    #     ret = super(RelativeLayout, self).on_touch_down(touch)
-    #     touch.pop()
-    #     return ret
-    #
-    # def on_touch_up(self, touch):
-    #     x, y = touch.x, touch.y
-    #     self.coordinates.append(int(x))
-    #     self.coordinates.append(int(y))
-    #     if len(self.coordinates) > 6:
-    #         self.coordinates = self.coodrinates[2:]
-    #     print("Mouse pressed X:" + str(int(x)) + "y" + str(int(y)))
-    #     touch.push()
-    #     touch.apply_transform_2d(self.to_local)
-    #     ret = super(RelativeLayout, self).on_touch_up(touch)
-    #     touch.pop()
-    #     return ret
+
 
     def load_image(self):
         self.ids.image.source= self.ids.user_input.text
 
-    def box2(self, x, y, width, height, red, blue, green):
-        image = self.ids.image.source
-        img = Image.open(image)
-        pixels = img.load()
-        for yy in range(y, y + height):
-            for xx in range(x, x + width):
-                pixels[xx, yy] = (red, blue, green)
-        self.ids.image.source = "box2.jpg"
-
-    def pixelate(self, name):
-        x= 370
-        y=250
-        width = 100
-        height = 100
-        image = self.ids.image.source
-        img = Image.open(image)
-        pixels = img.load()
-        red = 100
-        blue = 100
-        green = 100
-        mod_factor_y = int(height / 5)
-        mod_factor_x = int(width / 5)
-        for yy in range(y, y + height):
-            if yy % mod_factor_y == 0:
-                for xx in range(x, x + width):
-                    if xx % mod_factor_x == 0:
-                        red = pixels[xx, yy][0]
-                        green = pixels[xx, yy][1]
-                        blue = pixels[xx, yy][2]
-                        self.box2(self.ids.image.source, xx, yy, mod_factor_x, mod_factor_y, red, blue, green)
-
-        img.save(name + "pixelate.jpg")
-        self.ids.image.source = name + "pixelate.jpg"
-
-    def line_drawing(self, name):
-
-        image = self.ids.image.source
-        img = Image.open(image)
-        pixels = img.load()
-        intensity = 10
-        width = img.size[0]-1
-        height = img.size[1]-1
-        edge = img.filter(ImageFilter.FIND_EDGES)
-        print(type(edge))
-
-        draw = ImageDraw.Draw(edge)
-        print(draw)
-        for y in range(width):
-            for x in range(height):
-                pxl = edge.getpixel((x, y))
-                if len(pxl) > intensity:
-                    draw.point((x, y), fill="white")
-
-        img.save(name + "line_drawing.jpg")
-        self.ids.image.source = name + "line_drawing.jpg"
 
 
     def sepia( self, name):
@@ -128,6 +51,69 @@ class Display(Screen, Widget):
         img.save(name+ "invert.jpg")
         self.ids.image.source = name +"invert.jpg"
 
+    def pointillism(self, name):
+        image = self.ids.image.source
+        img = Image.open(image)
+        pixels = img.load()
+        random_int_list = []
+        canvas = Image.new("RGB", (img.size[0], img.size[1]), "white")
+        for i in range(200000):
+            size = random.randint(3, 13)
+            x = random.randint(0, img.size[0] - size)
+            y = random.randint(0, img.size[1] - size)
+            red = pixels[x, y][0]
+            green = pixels[x, y][1]
+            blue = pixels[x, y][2]
+            draw = ImageDraw.Draw(canvas)
+            ellipsebox = [(x, y), (x + size, y + size)]
+            draw.ellipse(ellipsebox, fill=(red, green, blue))
+            del draw
+        canvas.save(name + "pointillism.jpg")
+        self.ids.image.source = name + "pointillism.jpg"
+
+
+    def distance_halo(self):
+        image = self.ids.image.source
+        img = Image.open(image)
+        pixels = img.load()
+        targetX = 300
+        targetY = 350
+        modifier = 2
+        for y in range(img.size[1]):
+            for x in range(img.size[0]):
+                distanceX = targetX - x
+                distanceY = targetY - y
+                distance = (distanceX * distanceX) + (distanceY * distanceY)
+                distance_sqrt = math.sqrt(distance)
+                quotient = int(distance_sqrt // modifier)
+                red = pixels[x, y][0]
+                green = pixels[x, y][1]
+                blue = pixels[x, y][2]
+                new_red = red - quotient
+                new_green = green - quotient
+                new_blue = blue - quotient
+                if new_red < 0:
+                    new_red = 0
+                if new_green < 0:
+                    new_green = 0
+                if new_blue < 0:
+                    new_blue = 0
+
+                pixels[x, y] = (new_red, new_green, new_blue)
+        img.save(image + "distance_halo.jpg")
+        self.ids.image.source = image + "distance_halo.jpg"
+
+    def lime_green(self):
+        image = self.ids.image.source
+        img = Image.open(image)
+        pixels = img.load()
+        diff1 = -50
+        diff2 = 145
+        for y in range(img.size[1]):
+            for x in range(img.size[0]):
+                pixels[x, y] = (pixels[x, y][0] - diff1, pixels[x, y][1] + diff2, pixels[x, y][2] + diff1)
+        img.save(image + "lime_green.jpg")
+        self.ids.image.source = image + "lime_green.jpg"
 
 
 
